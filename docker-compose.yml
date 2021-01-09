@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  app:
+  # build路径
+    build:
+      context: .
+  #  端口映射
+    ports:
+      - "8000:8000"
+  # 挂载
+    volumes:
+      - "./app:/app"
+
+  # 运行
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
