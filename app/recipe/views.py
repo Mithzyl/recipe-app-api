@@ -1,5 +1,5 @@
+import sys
 from django.shortcuts import render
-
 from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +8,7 @@ from . import serializers
 from ..core.models import Tag
 
 
-class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
     """
     Manage tags in the database
     """
@@ -24,3 +24,11 @@ class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         :return:
         """
         return self.queryset.filter(user=self.request.user).order_by('-name')
+
+    def perform_create(self, serializer):
+        """
+        Create a new tag
+        :param serializer:
+        :return:
+        """
+        serializer.save(self.request.user)
