@@ -1,5 +1,15 @@
+from .. import models
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+
+def sample_user(email="Test@test.com", password="testpass"):
+    """
+    Create a sample user
+    :param email:
+    :param password:
+    :return:
+    """
+    return get_user_model().objects.create_user(email, password)
 
 
 class ModelTests(TestCase):
@@ -41,3 +51,14 @@ class ModelTests(TestCase):
         user = get_user_model().objects.create_superuser('test@londonappdev.com', 'test123')
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_tag_str(self):
+        """
+        Test the tag string representation
+        :return:
+        """
+        tag = models.Tag.objects.create(
+            user=sample_user(),
+            name="Vegan"
+        )
+        self.assertEqual(str(tag), tag.name)
