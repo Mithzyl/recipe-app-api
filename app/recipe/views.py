@@ -60,3 +60,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         :return:
         """
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        """
+        Return a appropriate serializer class
+        :return:
+        """
+        if self.action == 'retrieve':
+            return serializers.RecipeDetailSerializer
+
+        return self.serializer_class
