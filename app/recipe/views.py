@@ -12,8 +12,8 @@ class BaseRecipeAttrViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixi
     """
     Base viewset for user owned recipe attributes
     """
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """
@@ -53,15 +53,34 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """
     serializer_class = serializers.RecipeSerializer
     queryset = Recipe.objects.all()
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def _params_to_ints(self, qs):
+        """
+        Convert a list of string IDs to a list of integers
+        :param qs:
+        :return:
+        """
+        return [int(str_id) for str_id in qs.split(',')]
 
     def get_queryset(self):
         """
         Retrieve the recipes for the authenticated user
         :return:
         """
-        return self.queryset.filter(user=self.request.user)
+        tags = self.request.query_params.get('tags')  # get tags object
+        ingredients = self.request.query_params.get('ingredients')
+        queryset = self.queryset
+
+        if tags:
+            tag_id = self._params_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_id)  # __:筛选
+        if ingredients:
+            ingredient_id = self._params_to_ints(ingredients)
+            queryset = queryset.filter(ingredients__id__in=ingredient_id)
+
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         """
